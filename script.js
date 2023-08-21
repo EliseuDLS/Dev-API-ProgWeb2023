@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const planeta = document.getElementById("planeta");
     const informacoes = document.getElementById("informacoes");
 
+
     //define um ouvinte de evento para o botão de busca
     procurar.addEventListener("click", () => {
 
@@ -33,7 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             <h2>${planet.name}</h2>
                             <p>Climate: ${planet.climate}</p>
                             <p>Terrain: ${planet.terrain}</p>
-                            <p>Population: ${planet.population}</p>
+                            <p>Diameter: ${planet.diameter} Km</p>
+                            <p>Population: ${planet.population} habitants</p>
+                            <p>Rotation Period: ${planet.rotation_period} hours</p>
                         `;
 
                         //obtém os URLs dos filmes associados ao planeta
@@ -61,10 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
                             //caso não haja filmes associados, exibe uma mensagem
                             informacoes.innerHTML = planetaHtml + "<h3>No movies found for this planet.</h3>";
                         }
+                    
                     } else {
 
                         //caso nenhum planeta correspondente seja encontrado, exibe uma mensagem.
-                        informacoes.innerHTML = "<h2>Planet not found.</h2>";
+                        informacoes.innerHTML = "<h3>Planet not found.</h3>";
                     }
                 });
         }
