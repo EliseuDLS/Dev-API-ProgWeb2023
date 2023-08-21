@@ -1,5 +1,7 @@
+//espera até que o DOM esteja totalmente carregado para executar o código
 document.addEventListener("DOMContentLoaded", () => {
 
+    //URLs de imagens de alguns planetas
     const planetImages = {
         "Tatooine": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/DesertPlanet.jpg/200px-DesertPlanet.jpg",
         "Alderaan": "https://upload.wikimedia.org/wikipedia/en/thumb/6/60/Alderaan250ppx.PNG/220px-Alderaan250ppx.PNG",
@@ -18,19 +20,28 @@ document.addEventListener("DOMContentLoaded", () => {
         "Rodia":"https://i.pinimg.com/originals/09/b6/f7/09b6f7f9ff159aa2f0405ef5667c18e7.jpg"
     };
 
+    //seleciona elementos HTML pelos IDs
     const procurar = document.getElementById("procurar");
     const planeta = document.getElementById("planeta");
     const informacoes = document.getElementById("informacoes");
     const imagemPlaneta = document.getElementById("imagemPlaneta");
 
+    //adiciona evento ao botão "procurar"
     procurar.addEventListener("click", () => {
+        //obtém o nome do planeta inserido no campo de entrada
         const nomePlaneta = planeta.value;
+
+        //verifica se o nome do planeta não está vazio
         if (nomePlaneta !== "") {
+            //faz uma solicitação a API SWAPI para buscar as informações sobre os planetas
             fetch(`https://swapi.dev/api/planets/?search=${nomePlaneta}`)
-                .then(response => response.json())
+                .then(response => response.json()) //converte a resposta em formato JSON
                 .then(data => {
-                    if (data.count > 0) {
+                    if (data.count > 0) { //verifica se há resultados de planetas
+                        //pega o primeiro planeta na lista de resultados
                         const planet = data.results[0];
+
+                        //HTML com informações sobre o planeta
                         const planetaHtml = `
                             <h2>${planet.name}</h2>
                             <p>Climate: ${planet.climate}</p>
@@ -39,27 +50,35 @@ document.addEventListener("DOMContentLoaded", () => {
                             <p>Population: ${planet.population} habitants</p>
                             <p>Rotation Period: ${planet.rotation_period} hours</p>
                         `;
+
+                        //obtém URLs dos filmes em que o planeta aparece
                         const filmesUrls = planet.films;
-                        if (filmesUrls.length > 0) {
+
+                        if (filmesUrls.length > 0) { //verifica se há filmes associados ao planeta
+                            //faz solicitações para obter detalhes de cada filme
                             Promise.all(filmesUrls.map(url => fetch(url)))
                                 .then(responses => Promise.all(responses.map(response => response.json())))
                                 .then(filmes => {
+                                    //gera HTML com os títulos dos filmes
                                     const filmesHtml = filmes.map(filme => `<p>${filme.title}</p>`).join("");
                                     informacoes.innerHTML = planetaHtml + `<h3>Films:${filmesHtml}</h3>`;
                                 });
                         } else {
+                            //se nenhum filme corresponde ao planeta inserido imprime uma mensagem
                             informacoes.innerHTML = planetaHtml + "<h3>No movies found for this planet.</h3>";
                         }
 
+                        //verifica se há uma imagem associada ao nome do planeta
                         if (planetImages[planet.name]) {
                             const imageUrl = planetImages[planet.name];
                             imagemPlaneta.innerHTML = `<img src="${imageUrl}" alt="${planet.name}">`;
                         } else {
-                            imagemPlaneta.innerHTML = ""; 
+                            imagemPlaneta.innerHTML = "";
                         }
                     } else {
+                        //se nenhum planeta corresponde ao nome inserido imprime uma mensagem
                         informacoes.innerHTML = "<h3>Planet not found.</h3>";
-                        imagemPlaneta.innerHTML = ""; 
+                        imagemPlaneta.innerHTML = "";
                     }
                 });
         }
